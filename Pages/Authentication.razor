@@ -1,0 +1,25 @@
+@page "/authentication/{action}"
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@*  Add a callback on Log out success, this will cause the Authentication
+    component to re-render. The Action is a string, and therefore,
+    the RemoveAuthenticatorView should not be updated according to this:
+    https://docs.microsoft.com/en-us/aspnet/core/blazor/components/rendering?view=aspnetcore-5.0
+    Specifically it says:
+    - All of the parameter values are of known immutable primitive types
+    (for example, int, string, DateTime) and haven't changed since the
+    previous set of parameters were set.
+*@
+<RemoteAuthenticatorView Action="@Action" OnLogOutSucceeded=@LogOutSucceded />
+
+@code{
+    [Parameter] public string Action { get; set; }
+
+    // We add a simple callback that does nothing but write to the console.
+    // Upon execution the Action parameter seems to trigger the RemoteAuthenticatorView
+    // which attempts to log out again. Without a valid signout state it fails.
+    public Task LogOutSucceded(RemoteAuthenticationState state)
+    {
+        Console.WriteLine("Callback reached");
+        return Task.CompletedTask;
+    }
+}
